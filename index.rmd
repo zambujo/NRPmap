@@ -167,7 +167,7 @@ nodes <- rbind(nodes_grants, nodes_people) %>%
 
 edges <- people %>%
   distinct() %>%
-  mutate(width = 18, color = "#808080") %>%
+  mutate(width = 12, color = "#808080") %>%
   left_join(nodes, by = c("person_id_snsf" = "id0")) %>%
   rename(from = id) %>%
   left_join(nodes, by = c("project_number" = "id0")) %>%
