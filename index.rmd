@@ -52,7 +52,7 @@ Useful Links:
 Column
 -------------------------------------
 
-### NRP 72
+### NRP `r NRP_NUMBER`
 
 ```{r network}
 
