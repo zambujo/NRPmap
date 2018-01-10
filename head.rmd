@@ -1,0 +1,162 @@
+---
+title: "Active Swiss Research Programmes Networks"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    theme: cerulean
+    social: menu
+    source_code: https://git.io/vNmxt
+---
+
+```{r setup, include=FALSE}
+if (!require(pacman)) install.packages("pacman")
+p_load(
+  "flexdashboard",
+  "visNetwork",
+  "tidyverse",
+  "emojifont",
+  "stringr",
+  "magrittr"
+)
+
+viz_build <- function(nrp_name, df_projects = grants, df_people = ppl) {
+  # involved propjects ------------------------------------------------------
+  nrp <- df_projects %>%
+    # basic info about the grant
+    select(
+      project_number, # unique identifier
+      project_title,
+      funding_instrument,
+      university,
+      approved_amount,
+      responsible_applicant
+    ) %>%
+    filter(funding_instrument == nrp_name) %>%
+    mutate(
+      # keep acronyms only
+      university = str_extract(university, "(?<=- )[[:upper:]]+$"),
+      approved_amount = as.numeric(approved_amount),
+      url_grants = str_c("http://p3.snf.ch/project-", project_number)
+    )
+  # involved people ---------------------------------------------------------
+  people <- df_people %>%
+    select(
+      person_id_snsf,
+      last_name,
+      first_name,
+      projects_as_responsible_applicant,
+      projects_as_applicant,
+      projects_as_partner,
+      projects_as_employee
+    ) %>%
+    unite(project_number, starts_with("projects"), sep = ";") %>%
+    mutate(
+      # unite() includes NAs...
+      project_number = str_replace_all(project_number, "NA", ""),
+      project_number = str_replace_all(project_number, "[;]+", ";"),
+      project_number = str_replace_all(project_number, "^[;]|[;]$", ""),
+      # to unnest
+      project_number = str_split(project_number, ";")
+    ) %>%
+    unnest() %>%
+    distinct() %>%
+    inner_join(nrp, by = "project_number") %>%
+    mutate(
+      url_people = str_c(
+        "http://p3.snf.ch/person",
+        person_id_snsf,
+        iconv(last_name, to = "ASCII//TRANSLIT"),
+        iconv(first_name, to = "ASCII//TRANSLIT"), sep = " "
+      ),
+      url_people = str_replace_all(url_people, " ", "-")
+    )
+  # grant-node settings for visNetwork() ------------------------------------
+  nodes_grants <- nrp %>%
+    mutate(
+      label = project_number,
+      group = "Grants",
+      institute = university,
+      title = str_c(
+        "<a href=\"", url_grants, "\" target=\"_blank\">",
+        str_wrap(project_title, width = 35), "</a>"
+      ),
+      title = str_replace_all(title, "\\n", "<br>"),
+      title = str_c(
+        "<font size=\"1\">", title,
+        "</font><br><font size=\"1\" color=\"#202020\">",
+        round(approved_amount / 1000), "kCHF</font>"
+      ),
+      shadow = FALSE,
+      shape = "icon",
+      icon.code = "f15c",
+      icon.color = "#118df0",
+      icon.size = log(approved_amount) * 12
+    ) %>%
+    select(
+      id0 = project_number,
+      label,
+      group,
+      institute,
+      title,
+      shadow,
+      shape,
+      starts_with("icon")
+    )
+  # people-node settings for visNetwork() -----------------------------------
+  nodes_people <- people %>%
+    group_by(person_id_snsf) %>%
+    summarise(
+      label = str_c(first_name[1], " ", last_name[1]),
+      group = "People",
+      institute = NA,
+      title = str_c(
+        "<font size=\"1\">", "<a href=\"",
+        url_people[1],
+        "\" target=\"_blank\">",
+        label, "</a>", "</font>"
+      ),
+      shadow = FALSE,
+      shape = "icon",
+      icon.code = "f007",
+      icon.color = "#0e2f56",
+      icon.size = 120
+    ) %>%
+    rename(id0 = person_id_snsf)
+  # build nodes & edges -----------------------------------------------------
+  nodes <- rbind(nodes_grants, nodes_people) %>%
+    rownames_to_column("id") %>%
+    ungroup()
+  edges <- people %>%
+    distinct() %>%
+    mutate(width = 12, color = "#808080") %>%
+    left_join(nodes, by = c("person_id_snsf" = "id0")) %>%
+    rename(from = id) %>%
+    left_join(nodes, by = c("project_number" = "id0")) %>%
+    rename(to = id) %>%
+    # highlight the responsible applicant
+    mutate(color = ifelse(
+      str_c(last_name, " ", first_name) == responsible_applicant,
+      "#ff304f", color
+    )) %>%
+    select(from, to, width, color) %>%
+    mutate(from = as.numeric(from), to = as.numeric(to))
+  # visNetwork() output -----------------------------------------------------
+  visNetwork(nodes, edges) %>%
+    visIgraphLayout() %>%
+    visPhysics(stabilization = FALSE) %>%
+    visOptions(
+      selectedBy = "institute",
+      highlightNearest = list(enabled = TRUE, hover = TRUE)
+    ) %>%
+    visInteraction(navigationButtons = TRUE)
+}
+
+# load the data -----------------------------------------------------------
+grants <- readRDS("grants.rds.bz2")
+ppl <- readRDS("ppl.rds.bz2")
+
+## append body...
+```
+ 
+ 
+ 

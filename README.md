@@ -1,5 +1,7 @@
 # NRPmap
 
-Mapping NRP grant networks. Showing NRP 72 on antimicrobial resistance as a proof of concept.
+Mapping Swiss National Research Project (NRP) grant networks. Showing all NRPs for which there are running grants.
 
-:triangular_flag_on_post: Responsible applicants missing - waiting fix...
+## Install
+
+To update/build `index.html`, launch `R` and run `source("build.r")`.
