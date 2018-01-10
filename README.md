@@ -5,3 +5,7 @@ Mapping Swiss National Research Project (NRP) grant networks. Showing all NRPs f
 ## Install
 
 To update/build `index.html`, launch `R` and run `source("build.r")`.
+
+
+
+![License: MIT](https://img.shields.io/github/license/mashape/apistatus.svg)
