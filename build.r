@@ -1,24 +1,41 @@
 if (!require(pacman)) install.packages("pacman")
-if (!require(janitor)) install.packages("janitor")
-package_list <- c(
+packages <- c(
   "tidyverse",
   "janitor",
-  "lubridate",
   "rmarkdown",
   "knitr",
-  "rvest"
+  "rvest",
+  "usethis",
+  "glue",
+  "here",
+  "curl",
+  "conflicted"
 )
-p_load("tidyverse", "lubridate", "stringr", "magrittr", "rmarkdown")
-p_load("RCurl", "xml2")
+p_load(char = packages)
+conflict_scout()
+conflict_prefer("filter", "dplyr")
 
-p_load_gh("leeper/rio") # for dev version
 # update and save the data ------------------------------------------------
-grants <- rio::import("http://p3.snf.ch/P3Export/P3_GrantExport.csv") %>%
+grants <-
+  "http://p3.snf.ch/P3Export/P3_GrantExport.csv" %>%
+  read_csv2() %>%
   janitor::clean_names()
-write_rds(grants, "grants.rds.bz2", compress = "bz2")
-ppl <- rio::import("http://p3.snf.ch/P3Export/P3_PersonExport.csv") %>%
+
+ppl <-
+  "http://p3.snf.ch/P3Export/P3_PersonExport.csv" %>%
+  read_csv2() %>%
   janitor::clean_names()
-write_rds(ppl, "ppl.rds.bz2", compress = "bz2")
+
+dates <- grants$start_date
+new_dates <- as.Date(dates, format = "%d.%m.%Y")
+
+grants %>%
+  mutate(
+    start_date = as.Date(start_date, format = "%d.%m.%Y"),
+    end_date = as.Date(end_date, format = "%d%m%Y")) %>%
+  glimpse()
+
+
 
 # NRPs with running grants ------------------------------------------------
 nrp_active <- grants %>%
