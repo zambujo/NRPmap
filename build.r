@@ -1,5 +1,13 @@
 if (!require(pacman)) install.packages("pacman")
 if (!require(janitor)) install.packages("janitor")
+package_list <- c(
+  "tidyverse",
+  "janitor",
+  "lubridate",
+  "rmarkdown",
+  "knitr",
+  "rvest"
+)
 p_load("tidyverse", "lubridate", "stringr", "magrittr", "rmarkdown")
 p_load("RCurl", "xml2")
 
