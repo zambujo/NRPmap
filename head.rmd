@@ -1,5 +1,5 @@
 ---
-title: "Active Swiss Research Programmes Networks"
+title: "Current Swiss Research Programmes Networks"
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
