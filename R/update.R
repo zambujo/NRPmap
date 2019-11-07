@@ -1,42 +1,3 @@
-#' Updates data from p3.snf.ch
-#'
-#' @param filename a character matching filenames in p3.snf.ch/P3Export/
-#'
-#' @return a dataframe with the data (does not handle errors)
-#'
-#' @examples data_update("P3_PersonExport.csv")
-data_update <- function(filename) {
-  "updating data from http://p3.snf.ch/P3Export/{ filename }" %>%
-    glue() %>%
-    ui_info()
-  "http://p3.snf.ch/P3Export/{ filename }" %>%
-    glue() %>%
-    read_csv2(col_types = cols(.default = "c")) %>%
-    clean_names()
-}
-
-#' Extracts descriptions from NRP landing pages
-#'
-#' @param nrp_number the NRP number
-#'
-#' @return a character with the NRP description (does not handle errors)
-#'
-#' @examples extract_description(77)
-extract_description <- function(nrp_number) {
-  "extracting description from http://www.nfp{ nrp_number }.ch/en" %>%
-    glue() %>%
-    ui_info()
-  "http://www.nfp{ nrp_number }.ch/en" %>%
-    glue() %>%
-    read_html() %>%
-    html_nodes("#ctl00_PlaceHolderMain_Content__ControlWrapper_RichHtmlField p") %>%
-    html_text() %>%
-    str_squish() %>%
-    str_c(collapse = "  ")
-}
-
-# main --------------------------------------------------------------------
-
 p3data <- c("P3_GrantExport.csv", "P3_PersonExport.csv") %>%
   map(data_update)
 
@@ -57,13 +18,6 @@ nrp_active <- p3data %>%
     end_date >= today()) %>%
   count(funding_instrument) %>%
   rename(active_grants = n)
-
-# extract descriptions from NRP landing pages
-nrp_descriptions <-
-  nrp_active %>%
-  pull(funding_instrument) %>%
-  parse_number() %>%
-  map_chr(extract_description)
 
 # tidy the data
 grants <-

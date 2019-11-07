@@ -1,0 +1,20 @@
+
+### `r '{{k_name}}'`
+
+```{r}
+viz_build({{k_number}})
+```
+
+***
+
+  - **Description**: `r '{{k_description}}'`  
+
+  - **Data**: [p3.snf.ch](http://p3.snf.ch/Pages/DataAndDocumentation.aspx)  
+
+  - **More**: [SNSF National Research programmes](http://www.snf.ch/en/researchinFocus/nrp/Pages/default.aspx)  
+  
+<hr>
+
+Last updated: `r Sys.time()`.  
+
+Compiled with `r ji("love")` with `r glue("R { version$major }.{ version$minor }")`, [flexdashboard](https://github.com/rstudio/flexdashboard), and [visNetwork](https://datastorm-open.github.io/visNetwork/).
