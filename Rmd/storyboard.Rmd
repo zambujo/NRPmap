@@ -1,0 +1,106 @@
+---
+title: "People Behind the Swiss Research Programmes"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    theme: cerulean
+    social: menu
+    source_code: https://git.io/vNmxt
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+if (!require(pacman)) install.packages("pacman")
+p_load(
+  "flexdashboard",
+  "visNetwork",
+  "tidyverse",
+  "emojifont",
+  "stringr",
+  "magrittr"
+)
+
+viz_build <- function(n, proj = grants, ppl = people) {
+  proj <- filter(proj, nrp_number == n)
+  ppl <- inner_join(ppl, proj, by = "project_number")
+  
+  proj_html <- proj %>%
+    mutate(
+      kchf = round(approved_amount / 1000),
+      title_wrap = str_wrap(project_title, width = 35),
+      title_wrap = str_replace_all(title_wrap, "\\n", "<br>"),
+      title_html = glue(
+        "<font size=\"1\"><a href=\"{ grant_link }\" target=\"_blank\">{ title_wrap }</a></font><br><font size=\"1\" color=\"#202020\">{ kchf } kCHF</font>"))
+  
+  ppl_html <- ppl %>%
+    mutate(
+      full_name = glue("{ first_name } { last_name }"),
+      title_html = glue(
+        "<font size=\"1\">", "<a href=\"{ person_link }\" target=\"_blank\">{ full_name }</a></font>"))
+  
+  nodes_grants <- proj_html %>%
+    mutate(
+      id0 = project_number,
+      label = project_number,
+      group = "Grants",
+      institute = university,
+      title = title_html,
+      shadow = FALSE,
+      shape = "icon",
+      icon.code = "f15c",
+      icon.color = "#118df0",
+      icon.size = log(approved_amount) * 12) %>%
+    select(id0, label, group, institute, title, shadow, shape, starts_with("icon"))
+
+  nodes_people <- ppl_html %>%
+    group_by(person_id_snsf) %>%
+    summarise(
+      label = head(full_name, 1),
+      group = "People",
+      institute = head(university, 1),
+      title = head(title_html, 1),
+      shadow = FALSE,
+      shape = "icon",
+      icon.code = "f007",
+      icon.color = ifelse("responsible_applicant" %in% role, "#ff304f", "#0e2f56"),
+      icon.size = 120) %>%
+    ungroup() %>%
+    rename(id0 = person_id_snsf)
+  
+  # build nodes & edges -----------------------------------------------------
+  nodes <- rbind(nodes_grants, nodes_people) %>%
+    rownames_to_column("id") %>%
+    ungroup()
+  
+  edges <- ppl %>%
+    distinct() %>%
+    mutate(width = 12, color = "#808080") %>%
+    left_join(nodes, by = c("person_id_snsf" = "id0")) %>%
+    rename(from = id) %>%
+    left_join(nodes, by = c("project_number" = "id0")) %>%
+    rename(to = id) %>%
+    mutate(color = ifelse(role == "responsible_applicant", "#ff304f", color)) %>%
+    select(from, to, width, color) %>%
+    mutate(from = as.numeric(from), to = as.numeric(to))
+  
+  # visNetwork() output -----------------------------------------------------
+  visNetwork(nodes, edges) %>%
+    visIgraphLayout() %>%
+    visPhysics(stabilization = FALSE) %>%
+    visOptions(
+      selectedBy = "institute",
+      highlightNearest = list(enabled = TRUE, hover = TRUE)
+    ) %>%
+    visInteraction(navigationButtons = TRUE)
+}
+
+# load the data -----------------------------------------------------------
+grants <- read_rds(here("Data", "grants.rds.xz"))
+people <- read_rds(here("Data", "people.rds.xz"))
+
+## append body...
+```
+ 
+ 
+ 
