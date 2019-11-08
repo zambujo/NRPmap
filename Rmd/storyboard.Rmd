@@ -1,5 +1,6 @@
 ---
-title: "People Behind the Swiss Research Programmes"
+title: "Running Swiss Research Programmes"
+subtitle: ""
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
@@ -11,58 +12,20 @@ editor_options:
 ---
 
 ```{r boilerplate, include=FALSE}
-packages <- c(
-  "tidyverse",
-  "janitor",
-  "rmarkdown",
-  "lubridate",
-  "knitr",
-  "rvest",
-  "usethis",
-  "glue",
-  "here",
-  "curl",
-  "emojifont",
-  "emo",
-  "visNetwork",
-  "knitr",
-  "conflicted"
-)
-sapply(packages, library, character.only = TRUE)
-conflict_prefer("filter", "dplyr")
-conflict_prefer("parse_date", "readr")
-conflict_prefer("pluck", "purrr")
-conflict_prefer("here", "here")
-rm(packages)
-
-# load the data ------------
+library(here)
+source(here("R", "boilerplate.R"))
+source(here("R", "local.R"))
+# source(here("R", "update.R"))
 grants <- read_rds(here("Data", "grants.rds.xz"))
 people <- read_rds(here("Data", "people.rds.xz"))
-# load local functions -----
-source(here("R", "local.R"))
-
-nrps <- grants %>%
-  distinct(nrp_number, funding_instrument) %>%
-  rename(number = nrp_number) %>%
-  arrange(number) %>%
-  mutate(description = map_chr(number, extract_description))
-```
- 
- 
-```{r stories, include=FALSE}
-text <- character(0)
-for (k in 1:nrow(nrps)) {
-  k_name <- nrps %>% 
-    slice(k) %>% 
-    pull(funding_instrument)
-  k_number <- nrps %>% 
-    slice(k) %>% 
-    pull(number)
-  k_description <- nrps %>% 
-    slice(k) %>% 
-    pull(description)
-  text <- c(text, knitr::knit_expand(here("Rmd", "story.Rmd")))
-}
+nrp_summary <- read_rds(here("Data", "summary.rds.xz"))
+ui_info("opening data files....")
+ui_info("opening local functions....")
 ```
 
-`r paste(knitr::knit(text = text), collapse = "\n")`
+```{r stories, echo=FALSE, results='asis'}
+txt <- nrp_summary %>% 
+  pmap_chr(knit_expand, file = here("Rmd", "story.Rmd"))
+knit(text = txt, quiet = TRUE) %>% 
+  glue_collapse("\n")
+```

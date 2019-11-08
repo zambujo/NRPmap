@@ -19,7 +19,6 @@ nrp_active <- p3data %>%
   count(funding_instrument) %>%
   rename(active_grants = n)
 
-# tidy the data
 grants <-
   p3data %>%
   pluck(1) %>%
@@ -37,6 +36,7 @@ grants <-
     approved_amount = parse_number(approved_amount),
     grant_link = glue("http://p3.snf.ch/project-{ project_number }"),
     nrp_number = parse_number(funding_instrument))
+ui_done("--- done tidying grants dataset ---")
 
 people <-
   p3data %>%
@@ -58,6 +58,15 @@ people <-
       "http://p3.snf.ch/person-{ person_id_snsf }-{ last_name }-{ first_name }"),
     person_link = str_replace_all(person_link, " ", "-")) %>% # multiple names
   distinct()
+ui_done("--- done tidying poeple dataset ---")
+
+nrp_summary <- grants %>%
+  distinct(nrp_number, funding_instrument) %>%
+  rename(number = nrp_number) %>%
+  arrange(number) %>%
+  mutate(description = map_chr(number, extract_description))
+ui_done("--- done summary ---")
+
 
 # save to
 if (!dir.exists(here("Data"))) {
@@ -70,4 +79,6 @@ grants %>%
   write_rds(here("Data", "grants.rds.xz"), compress = "xz")
 people %>%
   write_rds(here("Data", "people.rds.xz"), compress = "xz")
+nrp_summary %>%
+  write_rds(here("Data", "summary.rds.xz"), compress = "xz")
 ui_done("update saved...")
