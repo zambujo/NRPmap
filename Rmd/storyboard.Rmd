@@ -5,6 +5,7 @@ output:
   flexdashboard::flex_dashboard:
     storyboard: true
     theme: cerulean
+    self_contained: false
     social: menu
     source_code: https://git.io/vNmxt
 editor_options: 
@@ -15,7 +16,7 @@ editor_options:
 library(here)
 source(here("R", "boilerplate.R"))
 source(here("R", "local.R"))
-# source(here("R", "update.R"))
+
 grants <- read_rds(here("Data", "grants.rds.xz"))
 people <- read_rds(here("Data", "people.rds.xz"))
 nrp_summary <- read_rds(here("Data", "summary.rds.xz"))

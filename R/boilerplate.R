@@ -10,6 +10,7 @@ package_list <- c(
   "curl",
   "emojifont",
   "emo",
+  "flexdashboard",
   "visNetwork",
   "knitr",
   "conflicted")

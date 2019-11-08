@@ -5,8 +5,8 @@ Exploring [National Research Programmes](https://www.sbfi.admin.ch/sbfi/en/home/
 
 ## Installation
 
-To update/build `index.html`, launch `R` and run `source("build.r")` or open a terminal and type:
+To update/build `index.html`, launch `R` and run `source("install.R")` or open a terminal and type:
 
 ```
-$ Rscript build.R
+$ Rscript install.R
 ```
