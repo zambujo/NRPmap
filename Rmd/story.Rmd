@@ -20,6 +20,6 @@ viz_build({{number}})
 
 <hr/>
 
-Compiled with [`r glue("R { version$major }.{ version$minor }")`](https://cran.r-project.org/), [knir](https://yihui.name/knitr/){target='_blank'}, [flexdashboard](https://github.com/rstudio/flexdashboard){target='_blank'}, [visNetwork](https://datastorm-open.github.io/visNetwork/){target='_blank'}, et al.
+Compiled with `r emoji("purple_heart")` using [`r glue("R { version$major }.{ version$minor }")`](https://cran.r-project.org/), [knir](https://yihui.name/knitr/){target='_blank'}, [flexdashboard](https://github.com/rstudio/flexdashboard){target='_blank'}, [visNetwork](https://datastorm-open.github.io/visNetwork/){target='_blank'}, et al.
 
 <font size='1'>Last updated  `r Sys.time()`  </font>
