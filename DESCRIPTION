@@ -25,7 +25,6 @@ Depends:
     glue,
     curl,
     emojifont,
-    emo,
     visNetwork,
     conflicted
 Encoding: UTF-8
