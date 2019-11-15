@@ -18,4 +18,4 @@ $ Rscript install.R
 
 ## Acknowledgements
 
-[holepunch package](https://karthik.github.io/holepunch/){target='_blank' rel='noopener noreferrer'} for generating the mybinder badge.
+[holepunch package](https://karthik.github.io/holepunch/) for generating the mybinder badge.
