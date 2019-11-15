@@ -1,10 +1,10 @@
 # NRPmap
 
 <!-- badges: start -->
+[![License: MIT](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/zambujo/NRPmap/blob/master/LICENSE) 
 [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zambujo/nrpmap/master?urlpath=rstudio)
 <!-- badges: end -->
 
-[![License: MIT](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/zambujo/NRPmap/blob/master/LICENSE)
 
 Exploring :switzerland: [National Research Programmes](https://www.sbfi.admin.ch/sbfi/en/home/research-and-innovation/research-and-innovation-in-switzerland/promotion-instruments/national-research-programmes-nrp.html){target='_blank' rel='noopener noreferrer'} (NRP) based on a [publicly available dataset](http://p3.snf.ch/Pages/DataAndDocumentation.aspx){target='_blank' rel='noopener noreferrer'}.
 
