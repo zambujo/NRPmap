@@ -13,15 +13,23 @@ editor_options:
 ---
 
 ```{r boilerplate, include=FALSE}
+library(tidyverse)
+library(readr)
 library(here)
-source(here("R", "boilerplate.R"))
-source(here("R", "local.R"))
+library(usethis)
+library(knitr)
+library(glue)
+library(flexdashboard)
+library(visNetwork)
+library(emojifont)
 
+ui_info("loading data files....")
 grants <- read_rds(here("Data", "grants.rds.xz"))
 people <- read_rds(here("Data", "people.rds.xz"))
 nrp_summary <- read_rds(here("Data", "summary.rds.xz"))
-ui_info("opening data files....")
-ui_info("opening local functions....")
+ui_info("loading frontend script....")
+here("R", "frontend.R") %>%
+  source()
 ```
 
 ```{r stories, echo=FALSE, results='asis'}

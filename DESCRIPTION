@@ -23,7 +23,7 @@ Depends:
     rvest,
     usethis,
     glue,
-    curl,
+    igraph,
     emojifont,
     visNetwork,
     conflicted

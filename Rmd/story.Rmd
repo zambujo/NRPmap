@@ -14,12 +14,12 @@ viz_build({{number}})
 
 <br/>  
 
-**More**  [http://www.nfp{{number}}.ch](http://www.nfp{{number}}.ch/en){target='_blank'}  
+**More**  [http://www.nfp{{number}}.ch](http://www.nfp{{number}}.ch/en){target='_blank' rel='noopener noreferrer'}  
 
-**Data**  [p3.snf.ch](http://p3.snf.ch/Pages/DataAndDocumentation.aspx){target='_blank'}  
+**Data**  [p3.snf.ch](http://p3.snf.ch/Pages/DataAndDocumentation.aspx){target='_blank' rel='noopener noreferrer'}  
 
 <hr/>
 
-Compiled with `r emoji("purple_heart")` using [`r glue("R { version$major }.{ version$minor }")`](https://cran.r-project.org/), [knir](https://yihui.name/knitr/){target='_blank'}, [flexdashboard](https://github.com/rstudio/flexdashboard){target='_blank'}, [visNetwork](https://datastorm-open.github.io/visNetwork/){target='_blank'}, et al.
+Compiled with `r emoji("purple_heart")` using [`r glue("R { version$major }.{ version$minor }")`](https://cran.r-project.org/){target='_blank' rel='noopener noreferrer'}, [knir](https://yihui.name/knitr/){target='_blank' rel='noopener noreferrer'}, [flexdashboard](https://github.com/rstudio/flexdashboard){target='_blank' rel='noopener noreferrer'}, [visNetwork](https://datastorm-open.github.io/visNetwork/){target='_blank' rel='noopener noreferrer'}, et al.
 
 <font size='1'>Last updated  `r Sys.time()`  </font>

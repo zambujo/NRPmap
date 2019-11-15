@@ -1,29 +1,69 @@
+#' Updates data from p3.snf.ch
+#'
+#' @param filename a character matching filenames in p3.snf.ch/P3Export/
+#'
+#' @return a dataframe with the data (does not handle errors)
+#'
+#' @examples data_update("P3_PersonExport.csv")
+data_update <- function(filename) {
+  "updating data from http://p3.snf.ch/P3Export/{ filename }" %>%
+    glue::glue() %>%
+    usethis::ui_info()
+  "http://p3.snf.ch/P3Export/{ filename }" %>%
+    glue::glue() %>%
+    readr::read_csv2(col_types = cols(.default = "c")) %>%
+    janitor::clean_names()
+}
+
+
+#' Extracts descriptions from NRP landing pages
+#'
+#' @param nrp_number the NRP number
+#'
+#' @return a character with the NRP description (does not handle errors)
+#'
+#' @examples extract_description(77)
+extract_description <- function(nrp_number) {
+  "extracting description from http://www.nfp{ nrp_number }.ch/en" %>%
+    glue::glue() %>%
+    usethis::ui_info()
+  "http://www.nfp{ nrp_number }.ch/en" %>%
+    glue::glue() %>%
+    xml2::read_html() %>%
+    rvest::html_nodes("#ctl00_PlaceHolderMain_Content__ControlWrapper_RichHtmlField p") %>%
+    rvest::html_text() %>%
+    iconv(to = "ASCII//TRANSLIT") %>%
+    stringr::str_c(collapse = "  ")
+}
+
+
+# main --------------------------------------------------------------------
+
 p3data <- c("P3_GrantExport.csv", "P3_PersonExport.csv") %>%
-  map(data_update)
+  purrr::map(data_update)
 
 # NRPs with running grants today
 nrp_active <- p3data %>%
-  pluck(1) %>%
-  select(start_date, end_date, funding_instrument) %>%
-  mutate_all(str_replace_all,
-             pattern = "data not included in P3",
-             replacement = NA_character_) %>%
-  filter(
-    str_detect(funding_instrument, str_c("NRP"))) %>%
-  mutate(
-    start_date = parse_date(start_date, format = "%d.%m.%Y"),
-    end_date = parse_date(end_date, format = "%d.%m.%Y")) %>%
-  filter(
-    start_date <= today(),
-    end_date >= today()) %>%
-  count(funding_instrument) %>%
-  rename(active_grants = n)
+  purrr::pluck(1) %>%
+  dplyr::select(start_date, end_date, funding_instrument) %>%
+  dplyr::mutate_all(str_replace_all,
+                    pattern = "data not included in P3",
+                    replacement = NA_character_) %>%
+  dplyr::filter(stringr::str_detect(funding_instrument, stringr::str_c("NRP"))) %>%
+  dplyr::mutate(
+    start_date = readr::parse_date(start_date, format = "%d.%m.%Y"),
+    end_date = readr::parse_date(end_date, format = "%d.%m.%Y")
+  ) %>%
+  dplyr::filter(start_date <= lubridate::today(),
+                end_date >= lubridate::today()) %>%
+  dplyr::count(funding_instrument) %>%
+  dplyr::rename(active_grants = n)
 
 grants <-
   p3data %>%
-  pluck(1) %>%
-  filter(funding_instrument %in% pull(nrp_active, funding_instrument)) %>%
-  select(
+  purrr::pluck(1) %>%
+  dplyr::filter(funding_instrument %in% dplyr::pull(nrp_active, funding_instrument)) %>%
+  dplyr::select(
     project_number,
     project_title,
     funding_instrument,
@@ -31,54 +71,65 @@ grants <-
     approved_amount,
     responsible_applicant
   ) %>%
-  mutate(
-    university = str_extract(university, "(?<=- )[[:upper:]]+$"),
-    approved_amount = parse_number(approved_amount),
-    grant_link = glue("http://p3.snf.ch/project-{ project_number }"),
-    nrp_number = parse_number(funding_instrument))
-ui_done("--- done tidying grants dataset ---")
+  dplyr::mutate(
+    university = stringr::str_extract(university, "(?<=- )[[:upper:]]+$"),
+    approved_amount = readr::parse_number(approved_amount),
+    grant_link = glue::glue("http://p3.snf.ch/project-{ project_number }"),
+    nrp_number = readr::parse_number(funding_instrument)
+  )
+usethis::ui_done("--- done tidying grants dataset ---")
 
 people <-
   p3data %>%
-  pluck(2) %>%
-  select(person_id_snsf, last_name, first_name, starts_with("projects")) %>%
+  purrr::pluck(2) %>%
+  dplyr::select(person_id_snsf,
+                last_name,
+                first_name,
+                dplyr::starts_with("projects")) %>%
   # separate_rows(starts_with("projects")) %>% # FIXME: rlang error
-  separate_rows(projects_as_responsible_applicant) %>%
-  separate_rows(projects_as_applicant) %>%
-  separate_rows(projects_as_partner) %>%
-  separate_rows(projects_as_employee) %>%
-  separate_rows(projects_as_contact_person) %>%
-  gather(key = "role", value = "project_number", starts_with("projects"), na.rm = TRUE) %>%
-  semi_join(grants, by = "project_number") %>%
-  mutate(
-    role = str_remove(role, "projects_as_"),
+  tidyr::separate_rows(projects_as_responsible_applicant) %>%
+  tidyr::separate_rows(projects_as_applicant) %>%
+  tidyr::separate_rows(projects_as_partner) %>%
+  tidyr::separate_rows(projects_as_employee) %>%
+  tidyr::separate_rows(projects_as_contact_person) %>%
+  tidyr::gather(
+    key = "role",
+    value = "project_number",
+    dplyr::starts_with("projects"),
+    na.rm = TRUE
+  ) %>%
+  dplyr::semi_join(grants, by = "project_number") %>%
+  dplyr::mutate(
+    role = stringr::str_remove(role, "projects_as_"),
     last_name = iconv(last_name, to = "ASCII//TRANSLIT"),
     first_name = iconv(first_name, to = "ASCII//TRANSLIT"),
-    person_link = glue(
-      "http://p3.snf.ch/person-{ person_id_snsf }-{ last_name }-{ first_name }"),
-    person_link = str_replace_all(person_link, " ", "-")) %>% # multiple names
-  distinct()
-ui_done("--- done tidying poeple dataset ---")
+    person_link = glue::glue(
+      "http://p3.snf.ch/person-{ person_id_snsf }-{ last_name }-{ first_name }"
+    ),
+    person_link = stringr::str_replace_all(person_link, " ", "-")
+  ) %>%
+  dplyr::distinct()
+usethis::ui_done("--- done tidying poeple dataset ---")
 
 nrp_summary <- grants %>%
-  distinct(nrp_number, funding_instrument) %>%
-  rename(number = nrp_number) %>%
-  arrange(number) %>%
-  mutate(description = map_chr(number, extract_description))
-ui_done("--- done summary ---")
+  dplyr::distinct(nrp_number, funding_instrument) %>%
+  dplyr::rename(number = nrp_number) %>%
+  dplyr::arrange(number) %>%
+  dplyr::mutate(description = map_chr(number, extract_description))
+usethis::ui_done("--- done summary ---")
 
 
 # save to
 if (!dir.exists(here("Data"))) {
-  ui_done("creating a new 'Data/' folder...")
-  here("Data") %>%
+  usethis::ui_done("creating a new 'Data/' folder...")
+  here::here("Data") %>%
     dir.create()
 }
 
 grants %>%
-  write_rds(here("Data", "grants.rds.xz"), compress = "xz")
+  readr::write_rds(here("Data", "grants.rds.xz"), compress = "xz")
 people %>%
-  write_rds(here("Data", "people.rds.xz"), compress = "xz")
+  readr::write_rds(here("Data", "people.rds.xz"), compress = "xz")
 nrp_summary %>%
-  write_rds(here("Data", "summary.rds.xz"), compress = "xz")
-ui_done("update saved...")
+  readr::write_rds(here("Data", "summary.rds.xz"), compress = "xz")
+usethis::ui_done("update saved...")
