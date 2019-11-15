@@ -15,3 +15,7 @@ To update/build `index.html`, launch `R` and run `source("install.R")` or open a
 ```
 $ Rscript install.R
 ```
+
+## Acknowledgements
+
+[holepunch package](https://karthik.github.io/holepunch/){target='_blank' rel='noopener noreferrer'} for generating the mybinder badge.
