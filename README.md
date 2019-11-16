@@ -6,7 +6,7 @@
 <!-- badges: end -->
 
 
-Exploring :switzerland: [National Research Programmes](https://www.sbfi.admin.ch/sbfi/en/home/research-and-innovation/research-and-innovation-in-switzerland/promotion-instruments/national-research-programmes-nrp.html){target='_blank' rel='noopener noreferrer'} (NRP) based on a [publicly available dataset](http://p3.snf.ch/Pages/DataAndDocumentation.aspx){target='_blank' rel='noopener noreferrer'}.
+Exploring :switzerland: [National Research Programmes](https://www.sbfi.admin.ch/sbfi/en/home/research-and-innovation/research-and-innovation-in-switzerland/promotion-instruments/national-research-programmes-nrp.html) (NRP) based on a [publicly available dataset](http://p3.snf.ch/Pages/DataAndDocumentation.aspx).
 
 ## Installation
 
