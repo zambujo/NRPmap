@@ -20,4 +20,4 @@ $ Rscript install.R
 
 ## Acknowledgments 
 
-[holepunch package](https://karthik.github.io/holepunch/) for generating the mybinder badge.
+  - [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zambujo/nrpmap/master?urlpath=rstudio) by [holepunch package](https://karthik.github.io/holepunch/)
