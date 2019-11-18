@@ -21,6 +21,7 @@ Depends:
     lubridate,
     knitr,
     rvest,
+    httr,
     usethis,
     glue,
     igraph,

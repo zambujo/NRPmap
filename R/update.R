@@ -1,3 +1,19 @@
+#' URL validator
+#'
+#' @param url A url to validate.
+#'
+#' @return A boolean TRUE if the response header status is 200.
+#' @export
+#'
+#' @examples valid_url("https://github.com/zambujo")
+valid_url <- function(url) {
+  valid <- url %>%
+    httr::HEAD() %>%
+    purrr::pluck("status_code") %>%
+    identical(200L)
+  return(valid)
+}
+
 #' Updates data from p3.snf.ch
 #'
 #' @param filename a character matching filenames in p3.snf.ch/P3Export/
@@ -6,11 +22,18 @@
 #'
 #' @examples data_update("P3_PersonExport.csv")
 data_update <- function(filename) {
-  "updating data from http://p3.snf.ch/P3Export/{ filename }" %>%
+  p3_url <- "http://p3.snf.ch/P3Export/{ filename }" %>%
+    glue::glue()
+
+  p3_url %>%
+    valid_url() %>%
+    stopifnot()
+
+  "updating data { p3_url }" %>%
     glue::glue() %>%
     usethis::ui_info()
-  "http://p3.snf.ch/P3Export/{ filename }" %>%
-    glue::glue() %>%
+
+  p3_url %>%
     readr::read_csv2(col_types = cols(.default = "c")) %>%
     janitor::clean_names()
 }
@@ -24,11 +47,18 @@ data_update <- function(filename) {
 #'
 #' @examples extract_description(77)
 extract_description <- function(nrp_number) {
-  "extracting description from http://www.nfp{ nrp_number }.ch/en" %>%
+  nrp_url <- "http://www.nfp{ nrp_number }.ch/en" %>%
+    glue::glue()
+
+  nrp_url %>%
+    valid_url() %>%
+    stopifnot()
+
+  "extracting description from { nrp_url }" %>%
     glue::glue() %>%
     usethis::ui_info()
-  "http://www.nfp{ nrp_number }.ch/en" %>%
-    glue::glue() %>%
+
+  nrp_url %>%
     xml2::read_html() %>%
     rvest::html_nodes("#ctl00_PlaceHolderMain_Content__ControlWrapper_RichHtmlField p") %>%
     rvest::html_text() %>%
@@ -125,6 +155,7 @@ if (!dir.exists(here("Data"))) {
   here::here("Data") %>%
     dir.create()
 }
+# TODO: write json instead?
 
 grants %>%
   readr::write_rds(here("Data", "grants.rds.xz"), compress = "xz")
