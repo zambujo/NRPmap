@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![License: MIT](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/zambujo/NRPmap/blob/master/LICENSE) 
 [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zambujo/nrpmap/master?urlpath=rstudio)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
 
