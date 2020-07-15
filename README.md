@@ -22,3 +22,8 @@ $ Rscript install.R
 ## Acknowledgments 
 
 [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/zambujo/nrpmap/master?urlpath=rstudio) by [holepunch](https://karthik.github.io/holepunch/)
+
+
+## License
+
+`nrpmap` is released under the [MIT License](./LICENCE).
