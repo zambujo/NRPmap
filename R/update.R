@@ -34,7 +34,7 @@ data_update <- function(filename) {
     usethis::ui_info()
 
   p3_url %>%
-    readr::read_csv2(col_types = cols(.default = "c")) %>%
+    readr::read_csv2(guess_max = 50000) %>%
     janitor::clean_names()
 }
 

@@ -1,3 +1,4 @@
+`%>%` <- magrittr::`%>%`
 usethis::ui_info("updating data ....")
 here::here("R", "update.R") %>%
   source()
