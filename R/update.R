@@ -34,7 +34,7 @@ data_update <- function(filename) {
     usethis::ui_info()
 
   p3_url %>%
-    readr::read_csv2(guess_max = 50000) %>%
+    readr::read_csv2(col_types = readr::cols(.default = "c")) %>%
     janitor::clean_names()
 }
 
@@ -72,27 +72,25 @@ extract_description <- function(nrp_number) {
 p3data <- c("P3_GrantExport.csv", "P3_PersonExport.csv") %>%
   purrr::map(data_update)
 
-# NRPs with running grants today
-nrp_active <- p3data %>%
+nrp_selection <-
+  p3data %>%
   purrr::pluck(1) %>%
   dplyr::select(start_date, end_date, funding_instrument) %>%
-  dplyr::mutate_all(str_replace_all,
+  dplyr::mutate_all(stringr::str_replace_all,
                     pattern = "data not included in P3",
                     replacement = NA_character_) %>%
-  dplyr::filter(stringr::str_detect(funding_instrument, stringr::str_c("NRP"))) %>%
+  dplyr::filter(stringr::str_detect(funding_instrument,
+                                    stringr::str_c("NRP"))) %>%
   dplyr::mutate(
-    start_date = readr::parse_date(start_date, format = "%d.%m.%Y"),
-    end_date = readr::parse_date(end_date, format = "%d.%m.%Y")
-  ) %>%
-  dplyr::filter(start_date <= lubridate::today(),
-                end_date >= lubridate::today()) %>%
-  dplyr::count(funding_instrument) %>%
-  dplyr::rename(active_grants = n)
+    nrp_number = stringr::str_extract(funding_instrument, "\\d+"),
+    nrp_number = as.integer(nrp_number)) %>%
+  dplyr::filter(nrp_number > 65, nrp_number < 78) %>%
+  dplyr::count(funding_instrument)
 
 grants <-
   p3data %>%
   purrr::pluck(1) %>%
-  dplyr::filter(funding_instrument %in% dplyr::pull(nrp_active, funding_instrument)) %>%
+  dplyr::filter(funding_instrument %in% dplyr::pull(nrp_selection, funding_instrument)) %>%
   dplyr::select(
     project_number,
     project_title,
@@ -145,12 +143,12 @@ nrp_summary <- grants %>%
   dplyr::distinct(nrp_number, funding_instrument) %>%
   dplyr::rename(number = nrp_number) %>%
   dplyr::arrange(number) %>%
-  dplyr::mutate(description = map_chr(number, extract_description))
+  dplyr::mutate(description = purrr::map_chr(number, extract_description))
 usethis::ui_done("--- done summary ---")
 
 
 # save to
-if (!dir.exists(here("Data"))) {
+if (!dir.exists(here::here("Data"))) {
   usethis::ui_done("creating a new 'Data/' folder...")
   here::here("Data") %>%
     dir.create()
@@ -158,9 +156,9 @@ if (!dir.exists(here("Data"))) {
 # TODO: write json instead?
 
 grants %>%
-  readr::write_rds(here("Data", "grants.rds.xz"), compress = "xz")
+  readr::write_rds(here::here("Data", "grants.rds.xz"), compress = "xz")
 people %>%
-  readr::write_rds(here("Data", "people.rds.xz"), compress = "xz")
+  readr::write_rds(here::here("Data", "people.rds.xz"), compress = "xz")
 nrp_summary %>%
-  readr::write_rds(here("Data", "summary.rds.xz"), compress = "xz")
+  readr::write_rds(here::here("Data", "summary.rds.xz"), compress = "xz")
 usethis::ui_done("update saved...")

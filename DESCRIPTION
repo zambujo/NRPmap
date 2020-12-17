@@ -1,6 +1,6 @@
 Type: Compendium
-Package: nrpmap
-Title: Creates a (flex)dashboard showing Swiss National
+Package: NRP Map
+Title: Creates a (Flex)Dashboard that Shows Swiss National
     Research Programmes Grants and Grantees
 Version: 0.0.1
 Authors@R: 
@@ -9,8 +9,8 @@ Authors@R:
            role = c("aut", "cre"),
            email = "joao.martins@gmx.net",
            comment = c(ORCID = "0000-0001-7961-4280"))
-Description: Exploring Switzerland's National Research
-    Programmes with Ongoing Grants
+Description: Exploring Recent Switzerland's National Research
+    Programmes
 License: What license it uses
 Depends: 
     tidyverse,

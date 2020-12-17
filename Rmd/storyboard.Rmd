@@ -28,13 +28,12 @@ grants <- read_rds(here("Data", "grants.rds.xz"))
 people <- read_rds(here("Data", "people.rds.xz"))
 nrp_summary <- read_rds(here("Data", "summary.rds.xz"))
 ui_info("loading frontend script....")
-here("R", "frontend.R") %>%
-  source()
+source(here("R", "frontend.R"))
 ```
 
 ```{r stories, echo=FALSE, results='asis'}
 txt <- nrp_summary %>% 
-  pmap_chr(knit_expand, file = here("Rmd", "story.Rmd"))
+  purrr::pmap_chr(knit_expand, file = here("Rmd", "story.Rmd"))
 knit(text = txt, quiet = TRUE) %>% 
   glue_collapse("\n")
 ```

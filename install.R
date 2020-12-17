@@ -8,6 +8,6 @@ here::here("Rmd", "storyboard.Rmd") %>%
   rmarkdown::render(
     output_format = "flexdashboard::flex_dashboard",
     output_file = "index.html",
-    output_dir = here("docs"),
+    output_dir = here::here("docs"),
     quiet = FALSE
   )
