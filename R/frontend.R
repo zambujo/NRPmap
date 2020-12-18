@@ -102,5 +102,6 @@ viz_build <- function(n, proj = grants, ppl = people) {
     visNetwork::visOptions(selectedBy = "institute",
                            highlightNearest = list(enabled = TRUE,
                                                    hover = TRUE)) %>%
-    visNetwork::visInteraction(navigationButtons = TRUE)
+    visNetwork::visInteraction(navigationButtons = TRUE) %>%
+    visNetwork::addFontAwesome(name = "font-awesome-visNetwork")
 }
