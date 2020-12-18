@@ -5,7 +5,7 @@ output:
   flexdashboard::flex_dashboard:
     storyboard: true
     theme: cerulean
-    self_contained: false
+    self_contained: true
     social: menu
     source_code: https://git.io/vNmxt
 editor_options: 
