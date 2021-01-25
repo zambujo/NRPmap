@@ -1,5 +1,5 @@
 
-### `r '{{funding_instrument}}'`
+### {{funding_instrument}}
 
 ```{r}
 viz_build({{number}})
@@ -10,7 +10,7 @@ viz_build({{number}})
 <br/>  
 
 **Description**  
-`r '{{description}}'`  
+{{description}}  
 
 <br/>  
 
